@@ -81,22 +81,18 @@ def print_example():
         seed_string = seed_string + next_char
     print(seed_string)
 
-# model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=64, nb_epoch=1)
-# model.save_weights('weights/char_rnn_1.h5')
-# model.load_weights('weights/char_rnn_1.h5')
-# model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=64, nb_epoch=1)
-# model.save_weights('weights/char_rnn_2.h5')
-# model.load_weights('weights/char_rnn_2.h5')
-# model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=64, nb_epoch=1)
-# model.save_weights('weights/char_rnn_3.h5')
+model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=64, nb_epoch=1)
+model.save_weights('weights/char_rnn_1.h5')
+model.load_weights('weights/char_rnn_1.h5')
+model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=64, nb_epoch=1)
+model.save_weights('weights/char_rnn_2.h5')
+model.load_weights('weights/char_rnn_2.h5')
+print_example()
 
 
 model.optimizer.lr=0.0001
 model.fit(sentences, np.expand_dims(next_chars,-1), batch_size=256, nb_epoch=1)
-model.save_weights('weights/char_rnn_4.h5')
-model.load_weights('weights/char_rnn_4.h5')
-
-
-
+model.save_weights('weights/char_rnn_3.h5')
+model.load_weights('weights/char_rnn_3.h5')
 print_example()
 
