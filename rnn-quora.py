@@ -35,14 +35,53 @@ print("Word index length : ", len(word_index))
 # Make the target one-hot
 ytrain_enc = np_utils.to_categorical(y)
 
-"""
-# define the size of the embedding matrix
+# Load embeddings and save embeddings for words in the dataset 
+embeddings_index = {}
+f = open('data/glove.840B.300d.txt')
+for line in tqdm(f):
+    values = line.split()
+    word = values[0]
+    coefs = np.asarray(values[1:], dtype='float32')
+    embeddings_index[word] = coefs
+f.close()
+
+print('Found %s word vectors.' % len(embeddings_index))
+
 embedding_matrix = np.zeros((len(word_index) + 1, 300))
 for word, i in tqdm(word_index.items()):
     embedding_vector = embeddings_index.get(word)
     if embedding_vector is not None:
         embedding_matrix[i] = embedding_vector
-"""
+
+# Create embeddint matrix using the word embeddings
+max_features = 200000
+filter_length = 5
+nb_filter = 64
+pool_length = 4
+
+model = Sequential()
+print('Build model...')
+
+model1 = Sequential()
+model1.add(Embedding(len(word_index) + 1,
+                     300,
+                     weights=[embedding_matrix],
+                     input_length=40,
+                     trainable=False))
+
+model1.add(TimeDistributed(Dense(300, activation='relu')))
+model1.add(Lambda(lambda x: K.sum(x, axis=1), output_shape=(300,)))
+
+model2 = Sequential()
+model2.add(Embedding(len(word_index) + 1,
+                     300,
+                     weights=[embedding_matrix],
+                     input_length=40,
+                     trainable=False))
+
+model2.add(TimeDistributed(Dense(300, activation='relu')))
+model2.add(Lambda(lambda x: K.sum(x, axis=1), output_shape=(300,)))
+
 
 print('Build model...')
 model5 = Sequential()
@@ -55,7 +94,7 @@ model6.add(LSTM(300, dropout_W=0.2, dropout_U=0.2))
 
 
 merged_model = Sequential()
-merged_model.add(Merge([model5, model6], mode='concat'))
+merged_model.add(Merge([model1, model2, model5, model6], mode='concat'))
 merged_model.add(BatchNormalization())
 
 merged_model.add(Dense(300))
@@ -76,7 +115,7 @@ merged_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc
 
 checkpoint = ModelCheckpoint('data/quora-weights.h5', monitor='val_acc', save_best_only=True, verbose=2)
 
-merged_model.fit([x1, x2], y=y, batch_size=128, nb_epoch=200,
+merged_model.fit([x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
                  verbose=1, validation_split=0.2, shuffle=True, callbacks=[checkpoint])
 
 #########################################
