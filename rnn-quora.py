@@ -79,5 +79,15 @@ checkpoint = ModelCheckpoint('data/quora-weights.h5', monitor='val_acc', save_be
 merged_model.fit([x1, x2], y=y, batch_size=128, nb_epoch=200,
                  verbose=1, validation_split=0.2, shuffle=True, callbacks=[checkpoint])
 
-
+#########################################
+# Using only raw text
+#########################################
+# Epoch 4/200
+# 323328/323432 [============================>.] - ETA: 0s - loss: 0.3505 - acc: 0.8388Epoch 00003: val_acc improved from 0.78183 to 0.79186, saving model to data/q323432/323432 [==============================] - 681s - loss: 0.3505 - acc: 0.8388 - val_loss: 0.4632 - val_acc: 0.7919
+# Epoch 5/200
+# 323432/323432 [==============================] - 616s - loss: 0.3083 - acc: 0.8593 - val_loss: 0.5002 - val_acc: 0.7884ve
+# Epoch 6/200
+# 323432/323432 [==============================] - 616s - loss: 0.2780 - acc: 0.8748 - val_loss: 0.4991 - val_acc: 0.7906ve
+# Epoch 7/200
+# 323328/323432 [============================>.] - ETA: 0s - loss: 0.2528 - acc: 0.8877Epoch 00006: val_acc improved from 0.79186 to 0.79443, saving model to data/q323432/323432 [==============================] - 676s - loss: 0.2528 - acc: 0.8877 - val_loss: 0.5045 - val_acc: 0.7944
 
