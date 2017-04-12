@@ -39,11 +39,18 @@ tk = text.Tokenizer(nb_words=200000)
 max_len = 40
 
 # Create a tokenizer fitted on all the words and fit the first and second sentence on it
-tk.fit_on_texts(list(data.question1.values) + list(data.question2.values.astype(str)))
+tk.fit_on_texts(list(data.question1.values) + list(data.question2.values.astype(str)) + list(data.question1split.values) + list(data.question2split.values.astype(str)))
 x1 = tk.texts_to_sequences(data.question1.values)
 x1 = sequence.pad_sequences(x1, maxlen=max_len)
 x2 = tk.texts_to_sequences(data.question2.values.astype(str))
 x2 = sequence.pad_sequences(x2, maxlen=max_len)
+
+x3 = tk.texts_to_sequences(data.question1split.values)
+x3 = sequence.pad_sequences(x3, maxlen=max_len)
+x4 = tk.texts_to_sequences(data.question2split.values.astype(str))
+x4 = sequence.pad_sequences(x4, maxlen=max_len)
+
+
 word_index = tk.word_index
 print("Word index length : ", len(word_index))
 
@@ -61,7 +68,6 @@ for line in tqdm(f):
 f.close()
 
 print('Found %s word vectors.' % len(embeddings_index))
-
 embedding_matrix = np.zeros((len(word_index) + 1, 300))
 for word, i in tqdm(word_index.items()):
     embedding_vector = embeddings_index.get(word)
@@ -165,7 +171,7 @@ model6.add(LSTM(300, dropout_W=0.2, dropout_U=0.2))
 
 
 merged_model = Sequential()
-merged_model.add(Merge([model1, model2, model5, model6], mode='concat'))
+merged_model.add(Merge([model1, model2, model3, model4, model5, model6, model1, model2, model3, model4, model5, model6], mode='concat'))
 merged_model.add(BatchNormalization())
 
 merged_model.add(Dense(300))
@@ -186,7 +192,7 @@ merged_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc
 
 checkpoint = ModelCheckpoint('data/quora-weights.h5', monitor='val_acc', save_best_only=True, verbose=2)
 
-merged_model.fit([x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
+merged_model.fit([x1, x2, x1, x2, x1, x2, x1, x2, x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
                  verbose=1, validation_split=0.2, shuffle=True, callbacks=[checkpoint])
 
 #########################################
