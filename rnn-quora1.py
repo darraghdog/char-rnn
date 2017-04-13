@@ -171,7 +171,9 @@ model6.add(LSTM(300, dropout_W=0.2, dropout_U=0.2))
 
 
 merged_model = Sequential()
-merged_model.add(Merge([model1, model2, model3, model4, model5, model6, model1, model2, model3, model4, model5, model6], mode='concat'))
+# merged_model.add(Merge([model1, model2, model3, model4, model5, model6, model1, model2, model3, model4, model5, model6], mode='concat'))
+merged_model.add(Merge([model1, model2, model3, model4, model5, model6], mode='concat'))
+
 merged_model.add(BatchNormalization())
 
 merged_model.add(Dense(300))
@@ -192,8 +194,14 @@ merged_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc
 
 checkpoint = ModelCheckpoint('data/quora-weights.h5', monitor='val_acc', save_best_only=True, verbose=2)
 
-merged_model.fit([x1, x2, x1, x2, x1, x2, x1, x2, x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
+# merged_model.fit([x1, x2, x1, x2, x1, x2, x1, x2, x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
+#                  verbose=1, validation_split=0.2, shuffle=True, callbacks=[checkpoint])
+
+
+merged_model.fit([x1, x2, x1, x2, x1, x2], y=y, batch_size=128, nb_epoch=200,
                  verbose=1, validation_split=0.2, shuffle=True, callbacks=[checkpoint])
+
+
 
 #########################################
 # Using only raw text
